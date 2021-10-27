@@ -1,10 +1,10 @@
-# appointmentScheduler
+# SQL Project for Code Louisvile
 
-SQL Project for Code Louisville 
+##  Project Description
 
-Project Description
+**Appointment Project**
 
-This is an appointment tracker for a fictional dental clinic. Its main purpose is to track patient appointment times.
+This is an appointment tracker for a small fictional dental clinic. Its main purpose is to track patient appointment times for the upcoming week.
 
 Goals 
 
