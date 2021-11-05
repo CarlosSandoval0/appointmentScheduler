@@ -132,9 +132,22 @@ Error Checks:
 
 */
 
+DELIMITER $$
+
+CREATE PROCEDURE CreatePatient()
+BEGIN
+	INSERT INTO patients (PatientsID, firstName, lastName, DOB, phoneNumber, address, gender)
+VALUES
+	('21', 'John', 'Doe', '2000-1-01', '502-123-4567', '5892 Oak Drive Louisville, KY 40201', 'm');
+    END $$
+
+    DELIMITER ;
+
+CALL CreatePatient();
+
 /*
-stored Procedure: Read
-Usage: 
+stored Procedure: readAppointments
+Usage: Finds appointments schedule on a certain day 
 Parameters:
 	
 
@@ -145,6 +158,19 @@ Error Checks:
 	
 
 */
+
+DELIMITER $$
+
+CREATE PROCEDURE readAppointments()
+BEGIN
+	SELECT * 
+ 	FROM appointments
+	WHERE scheduleDay = 'Tuesday';
+END $$
+
+DELIMITER ;
+
+CALL readAppointments();
 
 /*
 stored Procedure: Update
