@@ -112,12 +112,18 @@ SELECT * FROM patients;
 SELECT * FROM doctor;
 SELECT * FROM appointments;
 
+/*********************************
+
+Stored Procedures
+
+*********************************/
 
 /*
 stored Procedure: CreatePatient
 Usage: Creates a column for a new patient
 Parameters:
-	@patientfirstName - The first name of the new patient
+	@PatientsID - Identifies the patient
+	@firstName - The first name of the new patient
 	@lastName - The last name of the new patient
 	@DOB - Date Of Birth
 	@phoneNumber - Phone number
@@ -149,7 +155,7 @@ CALL CreatePatient();
 stored Procedure: readAppointments
 Usage: Finds appointments schedule on a certain day 
 Parameters:
-	
+		@appointments - The day of the appointment
 
 Returns:
 
@@ -190,6 +196,20 @@ Error Checks:
 
 */
 
+DELIMITER $$
+
+CREATE PROCEDURE updateappointments()
+BEGIN
+	UPDATE appointments
+    SET AppointmentID = '21', scheduleTime = '4 to 5', scheduleDay = 'Wednesday', doctorID = '1', patientsID = '21'
+	WHERE AppointmentID = 21;
+   
+END $$
+
+DELIMITER ;
+
+CALL updateappointments();
+
 /*
 stored Procedure: Delete
 Usage: Deletes an appointment time
@@ -209,3 +229,14 @@ Error Checks:
 	
 
 */
+
+DELIMITER $$
+
+CREATE PROCEDURE deleteappointments()
+BEGIN
+	DELETE FROM appointments WHERE AppointmentID = 22;
+END $$
+
+DELIMITER ;
+
+CALL deleteappointments();
