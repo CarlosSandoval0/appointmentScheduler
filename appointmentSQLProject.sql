@@ -21,6 +21,10 @@
 DROP & CREATE  
 
 *********************/
+/* CREATE DATABASE main; */
+USE main;
+
+
 DROP TABLE patients;
 DROP TABLE doctor;
 DROP TABLE appointments;
@@ -30,8 +34,6 @@ DROP PROCEDURE readAppointments;
 DROP PROCEDURE updateappointmentsdoctor;
 DROP PROCEDURE deleteappointments;
 
-/* CREATE DATABASE main; */
-USE main;
 
 CREATE TABLE patients(PatientsID VARCHAR(20), 
 					  firstName VARCHAR(20),
