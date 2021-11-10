@@ -8,8 +8,6 @@
  *    Doctor (DoctorID, firstName, lastName, phoneNumber, Specialty)
  *    Appointments (AppointmentID, schedualTime, schedualDay, doctorID, PatientsID)
  *
- * Indexes:
- *    
  * Stored Procedures
  *    CreatePatient @PatientsID, @firstName, @lastName, @DOB, @phoneNumber, @address, @gender
  *    Read
@@ -20,11 +18,19 @@
 
 /********************
 
-CREATE TABLES
+DROP & CREATE  
 
 *********************/
+DROP TABLE patients;
+DROP TABLE doctor;
+DROP TABLE appointments;
 
-CREATE DATABASE main;
+DROP PROCEDURE CreatePatient;
+DROP PROCEDURE readAppointments;
+DROP PROCEDURE updateappointmentsdoctor;
+DROP PROCEDURE deleteappointments;
+
+/* CREATE DATABASE main; */
 USE main;
 
 CREATE TABLE patients(PatientsID VARCHAR(20), 
@@ -108,10 +114,6 @@ VALUES
 ('27', '3 to 4', 'Thursday', '3', '0'),
 ('28', '4 to 5', 'Thursday', '3', '0');
 
-SELECT * FROM patients;
-SELECT * FROM doctor;
-SELECT * FROM appointments;
-
 /*********************************
 
 Stored Procedures
@@ -125,118 +127,69 @@ Parameters:
 	@PatientsID - Identifies the patient
 	@firstName - The first name of the new patient
 	@lastName - The last name of the new patient
-	@DOB - Date Of Birth
-	@phoneNumber - Phone number
-	@address - Address
-	@gender - Gender
-
-Returns:
-
-Error Checks:
-	Patient can not already exist
-	
-
 */
 
 DELIMITER $$
-
-CREATE PROCEDURE CreatePatient()
+CREATE PROCEDURE CreatePatient(IN patid INT, IN fir VARCHAR(20), IN las VARCHAR(20))
 BEGIN
-	INSERT INTO patients (PatientsID, firstName, lastName, DOB, phoneNumber, address, gender)
-VALUES
-	('21', 'John', 'Doe', '2000-1-01', '502-123-4567', '5892 Oak Drive Louisville, KY 40201', 'm');
+	INSERT INTO patients
+    SET PatientsID = patid, firstName = fir, lastName = las;
     END $$
-
-    DELIMITER ;
-
-CALL CreatePatient();
-
+DELIMITER ;
+    
 /*
 stored Procedure: readAppointments
 Usage: Finds appointments schedule on a certain day 
 Parameters:
 		@appointments - The day of the appointment
-
-Returns:
-
-Error Checks:
-	
-	
-
 */
 
 DELIMITER $$
-
-CREATE PROCEDURE readAppointments()
+CREATE PROCEDURE readAppointments(IN dayofweek VARCHAR(255))
 BEGIN
 	SELECT * 
  	FROM appointments
-	WHERE scheduleDay = 'Tuesday';
+	WHERE scheduleDay = dayofweek;
 END $$
-
 DELIMITER ;
-
-CALL readAppointments();
 
 /*
 stored Procedure: Update
 Usage: Reschedules an Appointment time for an existing patient
 Parameters:
 	@AppointmentID
-    @schedualTime
-    @schedualDay
     @doctorID
-	@PatientsID
-
-Returns:
-
-Error Checks:
-	
-	
-
 */
 
 DELIMITER $$
-
-CREATE PROCEDURE updateappointments()
+CREATE PROCEDURE updateappointmentsdoctor(IN apptid INT, IN docid INT)
 BEGIN
 	UPDATE appointments
-    SET AppointmentID = '21', scheduleTime = '4 to 5', scheduleDay = 'Wednesday', doctorID = '1', patientsID = '21'
-	WHERE AppointmentID = 21;
-   
+    SET  doctorID = docid
+    WHERE AppointmentID = apptid;
 END $$
-
 DELIMITER ;
-
-CALL updateappointments();
 
 /*
 stored Procedure: Delete
 Usage: Deletes an appointment time
 Parameters:
 	@AppointmentID
-    @schedualTime
-    @schedualDay
-    @doctorID
-	@PatientsID
-    
-	
-
-Returns:
-
-Error Checks:
-	
-	
-
 */
 
 DELIMITER $$
-
-CREATE PROCEDURE deleteappointments()
+CREATE PROCEDURE deleteappointments(IN apptid INT)
 BEGIN
-	DELETE FROM appointments WHERE AppointmentID = 22;
+	DELETE FROM appointments WHERE AppointmentID = apptid;
 END $$
-
 DELIMITER ;
 
-CALL deleteappointments();
+
+CALL CreatePatient(21, 'john', 'doe'); /* PatientsID, First Name, Last Name */
+CALL readAppointments('Monday'); /* Try 'Thursday' */
+CALL updateappointmentsdoctor(22, 3); /* Appointment ID, doctor ID */
+CALL deleteappointments(4); /* Enter the AppointmentID from appointments to drop */
+
+SELECT * FROM patients;
+SELECT * FROM doctor;
+SELECT * FROM appointments;
