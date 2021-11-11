@@ -24,6 +24,8 @@ DROP & CREATE
 /* CREATE DATABASE main; */
 USE main;
 
+ALTER TABLE patients
+DROP PRIMARY KEY; 
 
 DROP TABLE patients;
 DROP TABLE doctor;
@@ -41,7 +43,8 @@ CREATE TABLE patients(PatientsID VARCHAR(20),
                       DOB DATETIME,
                       phoneNumber VARCHAR(20),
                       address VARCHAR(100),
-                      gender VARCHAR(5)
+                      gender VARCHAR(5),
+                      PRIMARY KEY (lastName)
                       );
 INSERT INTO patients
 VALUES
@@ -55,7 +58,7 @@ VALUES
 ('8', 'Mason', 'Wilson', '1969-07-30', '913-682-3523', '3705 Hall Valley Drive Louisville, KY 40201', 'm'),
 ('9', 'Tina', 'Martinez', '1952-12-03', '719-892-1009', '4824 Millbrook Road Louisville, KY 40201', 'f'),
 ('10', 'Ethan', 'Anderson', '1939-06-26', '405-830-4304', '2045 Oak Drive Louisville, KY 40201', 'm'),
-('11', 'Daniel', 'Anderson', '1984-09-05', '412-466-9067', '216 Kidd Avenue Louisville, KY 40201', 'm'),
+('11', 'Daniel', 'Andy', '1984-09-05', '412-466-9067', '216 Kidd Avenue Louisville, KY 40201', 'm'),
 ('12', 'Jacob', 'Thomas', '1964-11-05', '616-261-8193', '2460 Windy Ridge Road Louisville, KY 40201', 'm'),
 ('13', 'Emily', 'Hernandez', '1953-05-26', '828-724-3693', '297 Bee Street Louisville, KY 40201', 'f'),
 ('14', 'Jackson', 'Moore', '1998-05-29', '732-724-6931', '791 Ferrell Street Louisville, KY 40201', 'm'),
@@ -164,11 +167,11 @@ Parameters:
 */
 
 DELIMITER $$
-CREATE PROCEDURE updateappointmentsdoctor(IN apptid INT, IN docid INT)
+CREATE PROCEDURE updateappointmentsdoctor(IN olddocid INT, IN newdocid INT)
 BEGIN
 	UPDATE appointments
-    SET  doctorID = docid
-    WHERE AppointmentID = apptid;
+    SET  doctorID = newdocid
+    WHERE doctorID = olddocid;
 END $$
 DELIMITER ;
 
@@ -180,18 +183,17 @@ Parameters:
 */
 
 DELIMITER $$
-CREATE PROCEDURE deleteappointments(IN apptid INT)
+CREATE PROCEDURE deleteappointments(IN docid INT)
 BEGIN
-	DELETE FROM appointments WHERE AppointmentID = apptid;
+	DELETE FROM appointments WHERE doctorID = docid;
 END $$
 DELIMITER ;
 
 
 CALL CreatePatient(21, 'john', 'doe'); /* PatientsID, First Name, Last Name */
 CALL readAppointments('Monday'); /* Try 'Thursday' */
-CALL updateappointmentsdoctor(22, 3); /* Appointment ID, doctor ID */
-CALL deleteappointments(4); /* Enter the AppointmentID from appointments to drop */
+CALL updateappointmentsdoctor(2, 1); /* Old doctor ID, New doctor ID */
+CALL deleteappointments(2); /* Enter the doctor ID from appointments to drop */
 
 SELECT * FROM patients;
-SELECT * FROM doctor;
 SELECT * FROM appointments;
