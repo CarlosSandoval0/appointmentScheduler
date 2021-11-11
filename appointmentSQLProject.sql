@@ -9,11 +9,10 @@
  *    Appointments (AppointmentID, schedualTime, schedualDay, doctorID, PatientsID)
  *
  * Stored Procedures
- *    CreatePatient @PatientsID, @firstName, @lastName, @DOB, @phoneNumber, @address, @gender
- *    Read
- *    UpdateAppointment @AppointmentID, @schedualTime, @schedualDay, @doctorID, @PatientsID
- *    DeletePatient @AppointmentID, @schedualTime, @schedualDay, @doctorID, @PatientsID
- *
+ *    CreatePatient 
+ *    ReadAppointments 
+ *    UpdateAppointment 
+ *    DeletePatient
 */
 
 /********************
@@ -24,27 +23,23 @@ DROP & CREATE
 /* CREATE DATABASE main; */
 USE main;
 
-ALTER TABLE patients
-DROP PRIMARY KEY; 
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS patients;
+DROP TABLE IF EXISTS doctor;
+DROP TABLE IF EXISTS specialty;
 
-DROP TABLE patients;
-DROP TABLE doctor;
-DROP TABLE appointments;
+DROP PROCEDURE IF EXISTS CreatePatient;
+DROP PROCEDURE IF EXISTS readAppointments;
+DROP PROCEDURE IF EXISTS updateappointmentsdoctor;
+DROP PROCEDURE IF EXISTS deleteappointments;
 
-DROP PROCEDURE CreatePatient;
-DROP PROCEDURE readAppointments;
-DROP PROCEDURE updateappointmentsdoctor;
-DROP PROCEDURE deleteappointments;
-
-
-CREATE TABLE patients(PatientsID VARCHAR(20), 
+CREATE TABLE patients(PatientsID INT PRIMARY KEY, 
 					  firstName VARCHAR(20),
                       lastName VARCHAR(20),
                       DOB DATETIME,
                       phoneNumber VARCHAR(20),
                       address VARCHAR(100),
-                      gender VARCHAR(5),
-                      PRIMARY KEY (lastName)
+                      gender VARCHAR(5)
                       );
 INSERT INTO patients
 VALUES
@@ -69,25 +64,42 @@ VALUES
 ('19', 'Teresa', 'Lopez', '1956-02-27', '803-826-0480', '3826 Neville Street Louisville, KY 40201', 'f'),
 ('20', 'Ana', 'Lee', '1987-11-20', '585-352-3170', '4658 Oak Drive Louisville, KY 40201', 'f');
 
-CREATE TABLE doctor(doctorID INT,
+CREATE TABLE specialty (specialtyID INT PRIMARY KEY,
+						specialtyName VARCHAR(20)
+					    );
+INSERT INTO specialty
+VALUES
+('1', 'Orthodontics'),
+('2', 'Oral medicine'),
+('3', 'Orofacial pain'),
+('4', 'Prosthodontics');
+
+CREATE TABLE doctor(doctorID INT PRIMARY KEY,
 				    firstName VARCHAR(20),
                     lastName VARCHAR(20),
                     phoneNumber VARCHAR(20),
-                    specialty VARCHAR(20)
+                    specialty INT,
+					FOREIGN KEY (specialty) REFERENCES specialty(specialtyID)
                     );
 INSERT INTO doctor
 VALUES
-('1', 'sara', 'Riley', '502-936-8924','Orthodontics'),
-('2', 'Debra', 'Patel', '502-838-3363','Oral medicine'),
-('3', 'Sharon', 'Cooper', '502-397-1095','Orofacial pain'),
-('4', 'John', 'Kelly', '502-555-2937','Prosthodontics');
+(1, 'sara', 'Riley', '502-936-8924', 2),
+(2, 'Debra', 'Patel', '502-838-3363', 3),
+(3, 'Sharon', 'Cooper', '502-397-1095', 4),
+(4, 'John', 'Kelly', '502-555-2937', 1);
 
 CREATE TABLE appointments(AppointmentID INT,
 						  scheduleTime VARCHAR(20),
 						  scheduleDay VARCHAR(20),
 						  doctorID INT,
-						  patientsID INT
+						  patientsID INT,
+                          FOREIGN KEY (patientsID) REFERENCES patients(PatientsID),
+                          FOREIGN KEY (doctorID) REFERENCES doctor(doctorID)
                           );
+                          
+CREATE INDEX scheduleDay_index
+ON appointments (scheduleDay);
+
 INSERT INTO appointments
 VALUES 
 ('1', '9 to 10', 'Monday', '1', '1'), 
@@ -109,15 +121,8 @@ VALUES
 ('17', '11 to 12', 'Wednesday', '2', '17'),
 ('18', '1 to 2', 'Wednesday', '1', '18'),
 ('19', '2 to 3', 'Wednesday', '1', '19'),
-('20', '3 to 4', 'Wednesday', '1', '20'),
-('21', '4 to 5', 'Wednesday', '1', '0'),
-('22', '9 to 10', 'Thursday', '4', '0'),
-('23', '10 to 11', 'Thursday', '4', '0'),
-('24', '11 to 12', 'Thursday', '4', '0'),
-('25', '1 to 2', 'Thursday', '3', '0'),
-('26', '2 to 3', 'Thursday', '3', '0'),
-('27', '3 to 4', 'Thursday', '3', '0'),
-('28', '4 to 5', 'Thursday', '3', '0');
+('20', '3 to 4', 'Wednesday', '1', '20')
+;
 
 /*********************************
 
@@ -152,8 +157,11 @@ Parameters:
 DELIMITER $$
 CREATE PROCEDURE readAppointments(IN dayofweek VARCHAR(255))
 BEGIN
-	SELECT * 
- 	FROM appointments
+	SELECT scheduleTime, scheduleDay, concat(d.firstName, ' ',d.lastName) as "DoctorName",
+    concat(p.firstName, ' ', p.lastName) as "PatientName"
+ 	FROM appointments AS a
+    INNER JOIN doctor AS d ON a.doctorID = d.doctorID
+	INNER JOIN patients AS p ON a.patientsID = p.patientsID 
 	WHERE scheduleDay = dayofweek;
 END $$
 DELIMITER ;
@@ -195,5 +203,7 @@ CALL readAppointments('Monday'); /* Try 'Thursday' */
 CALL updateappointmentsdoctor(2, 1); /* Old doctor ID, New doctor ID */
 CALL deleteappointments(2); /* Enter the doctor ID from appointments to drop */
 
+SELECT * FROM doctor;
+SELECT * FROM specialty;
 SELECT * FROM patients;
 SELECT * FROM appointments;
