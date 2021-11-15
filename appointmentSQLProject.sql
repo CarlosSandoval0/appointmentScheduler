@@ -199,11 +199,11 @@ DELIMITER ;
 
 
 CALL CreatePatient(21, 'john', 'doe'); /* PatientsID, First Name, Last Name */
-CALL readAppointments('Monday'); /* Try 'Thursday' */
+CALL readAppointments('Wednesday'); /* Try 'Monday' */
 CALL updateappointmentsdoctor(2, 1); /* Old doctor ID, New doctor ID */
 CALL deleteappointments(2); /* Enter the doctor ID from appointments to drop */
 
-SELECT * FROM doctor;
-SELECT * FROM specialty;
-SELECT * FROM patients;
-SELECT * FROM appointments;
+/* SELECT * FROM doctor; */
+/* SELECT * FROM specialty; */
+SELECT * FROM patients; 
+SELECT * FROM appointments; 
